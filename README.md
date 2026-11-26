@@ -1,160 +1,48 @@
+# Executive Data Assistant
 
+A governed natural-language analytics app built with Python, DuckDB, Streamlit, and OpenAI. Non-technical leaders can ask plain-English business questions and receive audited SQL queries, structured data tables, and automatic charts.
 
-\# 📊 Executive Data Assistant (Text-to-SQL Prototype)
+## Key Capabilities
 
+* **Multi-Table Relational Joins:** Connects `subscriptions` (MRR, customer segments, churn reasons) with `support_tickets` (priority, resolution hours, CSAT scores) via `customer_id` for cross-functional insights.
+* **Automated Visual Summaries:** Inspects query outputs and automatically renders bar charts when categorical labels are paired with numeric metrics, while filtering out ID fields.
+* **Built-In Governance:** Uses read-only DuckDB connections (`read_only=True`), deterministic prompting (`temperature=0`), and an expandable SQL audit trail so leaders can verify every number.
 
+## Data Model
 
-A lightweight, governed natural-language analytics application that enables non-technical stakeholders to query business metrics in plain English—complete with automated SQL auditing and read-only guardrails.
+* **`subscriptions`:** `customer_id`, `company_name`, `segment`, `region`, `mrr`, `status`, `churn_reason`, `quarter`
+* **`support_tickets`:** `ticket_id`, `customer_id`, `category`, `priority`, `resolution_hours`, `csat_score`
 
+## Quickstart
 
+1. **Clone and set up the environment:**
+   ```bash
+   git clone https://github.com
+   cd exec-data-chat
+   python -m venv venv
+   venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
 
-\---
+2. **Seed the local database:**
+   ```bash
+   python setup_db.py
+   ```
 
+3. **Run the app:**
+   ```bash
+   streamlit run app.py
+   ```
 
+## Example Prompts to Try
 
-\## 🎯 Business Problem \& Architectural Approach
+* *"Compare average ticket resolution hours and CSAT scores between Active and Churned customers."*
+* *"Which churned companies had Critical support tickets, and what was their MRR?"*
+* *"Show total MRR by customer segment."*
 
+## Scaling Roadmap
 
-
-Growth-stage and mid-sized organizations often face a bottleneck between executive decision-making and data engineering: leaders need fast answers on revenue, retention, and churn, while lean data teams are bogged down by ad-hoc SQL requests. 
-
-
-
-However, deploying unchecked generative AI on company data introduces two major risks: \*\*hallucinated metrics\*\* and \*\*data security vulnerabilities\*\*.
-
-
-
-This prototype demonstrates a pragmatic, production-minded architecture designed to solve both challenges:
-
-\* \*\*Speed to Value:\*\* Built with a lightweight, low-cost stack (\*\*Python, DuckDB, Streamlit, OpenAI API\*\*) to validate stakeholder adoption before investing in heavy infrastructure.
-
-\* \*\*Executive Trust (Transparency Layer):\*\* Every answer exposes the underlying generated SQL query so analysts and executives can audit the exact logic behind the numbers.
-
-\* \*\*Built-in Governance:\*\* Enforces strict read-only database connections (`read\_only=True`), deterministic prompting (`temperature=0`), and schema-bounded context to prevent destructive queries or schema hallucination.
-
-
-
-\---
-
-
-
-\## 🛠️ Tech Stack
-
-
-
-\* \*\*Application Layer:\*\* \[Streamlit](https://streamlit.io) (rapid, interactive UI for stakeholder self-service)
-
-\* \*\*Analytical Engine:\*\* \[DuckDB](https://duckdb.org) (in-process OLAP database; zero-cost local execution with seamless parity to cloud data warehouses)
-
-\* \*\*AI Orchestration:\*\* OpenAI API (`gpt-4o-mini` for low-latency, cost-effective SQL generation)
-
-\* \*\*Data Manipulation:\*\* Python \& Pandas
-
-
-
-\---
-
-
-
-\## 🚀 Quickstart Guide
-
-
-
-\### 1. Clone the Repository \& Set Up Environment
-
-```bash
-
-git clone https://github.com
-
-cd exec-data-chat
-
-
-
-python -m venv venv
-
-\# Windows:
-
-venv\\Scripts\\activate
-
-\# Mac/Linux:
-
-source venv/bin/activate
-
-
-
-pip install streamlit duckdb openai pandas
-
-```
-
-
-
-\### 2. Initialize the Sample Database
-
-Generate the local DuckDB instance populated with sample SaaS subscription, MRR, and churn data:
-
-```bash
-
-python setup\_db.py
-
-```
-
-
-
-\### 3. Launch the Application
-
-```bash
-
-streamlit run app.py
-
-```
-
-Enter your OpenAI API key in the application sidebar and test plain-English queries such as:
-
-\* \*"What is our total churned MRR by segment in Q3?"\*
-
-\* \*"Which region has the highest active Enterprise revenue?"\*
-
-\* \*"List the top reasons for customer churn across all quarters."\*
-
-
-
-\---
-
-
-
-\## 🏗️ Path to Production (Scaling Roadmap)
-
-
-
-While this repository uses DuckDB for zero-cost local prototyping, the architecture is modular and designed for straightforward enterprise scaling:
-
-
-
-1\. \*\*Cloud Warehouse Migration:\*\* Swap the local DuckDB connector for `snowflake-connector-python` or `databricks-sql-connector` using role-based access control (RBAC) service accounts.
-
-2\. \*\*Semantic Layer Integration:\*\* Connect the prompt context directly to \*\*dbt (data build tool)\*\* manifest files (`manifest.json`) so the LLM leverages documented business definitions and certified metrics rather than raw table schemas.
-
-3\. \*\*Automated Visualization \& Caching:\*\* Integrate Plotly for dynamic chart rendering and implement query caching to optimize API token spend (FinOps).
-
-4\. \*\*Evaluation \& Observability:\*\* Add automated query logging and a golden-dataset test suite to monitor SQL accuracy over time.
-
-
-
-\---
-
-
-
-\## 📁 Repository Structure
-
-```text
-
-├── app.py                  # Main Streamlit UI, LLM prompt guardrails, and query execution
-
-├── setup\_db.py             # Script to initialize and seed the local DuckDB database
-
-├── business\_data.duckdb    # Local analytical database (generated upon setup)
-
-└── README.md               # Architecture overview and documentation
-
-```
+* **Cloud Warehouse:** Replace DuckDB with Snowflake or Databricks using read-only RBAC service accounts.
+* **Semantic Layer:** Feed dbt `manifest.json` definitions into the prompt context for standardized business metrics.
+* **FinOps & Testing:** Add query caching to lower token usage and a golden-dataset test suite to track SQL accuracy.
 
