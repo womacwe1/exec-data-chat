@@ -1,4 +1,4 @@
-markdown
+
 
 \# 📊 Executive Data Assistant (Text-to-SQL Prototype)
 
